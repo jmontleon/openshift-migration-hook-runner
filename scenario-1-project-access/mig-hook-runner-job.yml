@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mig-hook-runner
+  namespace: openshift-migration
+spec:
+  parallelism: 1    
+  completions: 1    
+  template:         
+    metadata:
+      name: mig-hook-runner
+      namespace: openshift-migration
+    spec:
+      serviceAccountName: mig-hook-runner
+      containers:
+      - name: runner
+        image: quay.io/jmontleon/mig-hook-runner:latest
+        env:
+        - name: RUNNER_PLAYBOOK 
+          value: /tmp/private/projects/mig-hook-runner-playbook.yml
+        volumeMounts:
+          - name: playbook
+            mountPath: /tmp/private/projects
+      volumes:
+        - name: playbook
+          configMap:
+            name: mig-hook-runner-playbook-yml
+            items:
+            - key: mig-hook-runner-playbook.yml
+              path: mig-hook-runner-playbook.yml
+      restartPolicy: OnFailure

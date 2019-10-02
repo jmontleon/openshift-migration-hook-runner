@@ -1,0 +1,11 @@
+- hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: Get a list of all pods from any namespace
+    k8s_facts:
+      kind: Pod
+      namespace: test 
+    register: pod_list
+
+  - debug:
+      msg: "{{ pod_list }}"
