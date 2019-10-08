@@ -1,0 +1,28 @@
+- hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: Get a list of all pods from any namespace
+    k8s_facts:
+      kind: Pod
+      namespace: test
+      field_selectors:
+      - status.phase=Running
+      label_selectors:
+      - scenario=exec
+    register: pod_list
+
+  - name: Test Exec
+    k8s_exec:
+      pod: "{{ item.metadata.name }}"
+      namespace: "test"
+      command: cat /etc/redhat-release
+    with_items: "{{ pod_list.resources }}"
+    register: exec
+    loop_control:
+      label: "{{ item.metadata.name }}"
+
+  - debug:
+      msg: "{{ item.stdout_lines }}"
+    with_items: "{{ exec.results }}"
+    loop_control:
+      label: "{{ item.invocation.module_args.pod }}"

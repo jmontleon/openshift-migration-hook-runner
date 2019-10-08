@@ -1,2 +1,4 @@
 FROM docker.io/ansible/ansible-runner:1.4.0
-RUN yum -y install python-openshift
+RUN yum -y install python-openshift wget
+RUN cd /usr/lib/python2.7/site-packages/ansible/modules/clustering/k8s/ \
+ && wget https://raw.githubusercontent.com/ansible/ansible/d780cfb13cc7af4be937058dcb272b8d131c5c8e/lib/ansible/modules/clustering/k8s/k8s_exec.py

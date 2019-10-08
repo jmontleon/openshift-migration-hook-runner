@@ -24,4 +24,13 @@ This time around you should see the job successfully complete and the pod detail
 
 Note, while we will need to add a Rolebinding to give the hook runner pod access we won't want to restore it on the new cluster.
 
-## Scenario 2
+## Scenario 2 Run exec commands over API
+
+1. `cd scenario-2-api-exec`
+1. `oc create sa -n openshift-migration mig-hook-runner`
+1. `oc new-project test`
+1. `oc run -n test --image=ubi8-minimal --labels='scenario=exec'  exec -- sleep infinity`
+1. `oc create configmap -n openshift-migration mig-hook-runner-playbook-yml --from-file=mig-hook-runner-playbook.yml`
+1. `oc create -f mig-hook-runner-job.yml`
+
+Note, that if you already created the sleep pod for Scenario 1 you should only see output for the pod in Scenario 2 because we used a label and selector in the playbook to find just this pod
